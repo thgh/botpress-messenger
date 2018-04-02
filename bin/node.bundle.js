@@ -1773,9 +1773,9 @@ var Messenger = function (_EventEmitter) {
             if (event.message && event.message.is_echo) {
               event.is_echo = 'yes'
               event.echo = 'yes'
-              const { sender, receiver } = event
-              event.sender = receiver
-              event.receiver = sender
+              const { sender, recipient } = event
+              event.sender = recipient
+              event.recipient = sender
               event.message.text = '[operator] ' + event.message.text
               console.log('messenger.is_echo', event)
             }
