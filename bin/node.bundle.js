@@ -1770,10 +1770,9 @@ var Messenger = function (_EventEmitter) {
           }
           // Iterate over each messaging event
           entry.messaging.forEach(function (event) {
-            if (event.message && event.message.is_echo && !_this7.config.broadcastEchoes) {
-              return;
-            }
-            if (event.message && event.message.text) {
+            if (event.message && event.message.is_echo) {
+              _this7._handleEvent('echo', event);
+            } else if (event.message && event.message.text) {
               if (event.message.quick_reply) {
                 _this7._handleQuickReplyEvent(event);
               } else {
