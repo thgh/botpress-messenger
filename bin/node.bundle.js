@@ -1772,7 +1772,8 @@ var Messenger = function (_EventEmitter) {
           entry.messaging.forEach(function (event) {
             if (event.message && event.message.is_echo) {
               console.log('messenger.is_echo', event)
-              _this7._handleEvent('postback:echo', event);
+              _this7._handleEvent('postback:HITL_START', event);
+              _this7._handleEvent('postback', event);
             } else if (event.message && event.message.text) {
               if (event.message.quick_reply) {
                 _this7._handleQuickReplyEvent(event);
@@ -1782,6 +1783,7 @@ var Messenger = function (_EventEmitter) {
             } else if (event.message && event.message.attachments) {
               _this7._handleAttachmentEvent(event);
             } else if (event.postback) {
+              console.log('messenger.postback', event)
               _this7._handlePostbackEvent(event);
             } else if (event.delivery) {
               _this7._handleEvent('delivery', event);
