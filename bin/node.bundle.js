@@ -1743,7 +1743,6 @@ var Messenger = function (_EventEmitter) {
     key: '_initWebhook',
     value: function _initWebhook() {
       var _this7 = this;
-            console.log(_this7.config)
 
       this.app.get('/webhook', function (req, res) {
         if (req.query['hub.mode'] === 'subscribe' && req.query['hub.verify_token'] === _this7.config.verifyToken) {
