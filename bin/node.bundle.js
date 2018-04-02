@@ -1771,10 +1771,16 @@ var Messenger = function (_EventEmitter) {
           // Iterate over each messaging event
           entry.messaging.forEach(function (event) {
             if (event.message && event.message.is_echo) {
+              event.is_echo = 'yes'
+              event.echo = 'yes'
+              const { sender, receiver } = event
+              event.sender = receiver
+              event.receiver = sender
+              event.message.text = '[operator] ' + event.message.text
               console.log('messenger.is_echo', event)
-              _this7._handleEvent('postback:HITL_START', event);
-              _this7._handleEvent('postback', event);
-            } else if (event.message && event.message.text) {
+            }
+
+            if (event.message && event.message.text) {
               if (event.message.quick_reply) {
                 _this7._handleQuickReplyEvent(event);
               } else {
