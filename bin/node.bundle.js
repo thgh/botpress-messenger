@@ -1770,16 +1770,9 @@ var Messenger = function (_EventEmitter) {
           // Iterate over each messaging event
           entry.messaging.forEach(function (event) {
             if (event.message && event.message.is_echo) {
-              event.is_echo = 'yes'
-              event.echo = 'yes'
-              const { sender, recipient } = event
-              event.sender = recipient
-              event.recipient = sender
-              event.message.text = '[operator] ' + event.message.text
               console.log('messenger.is_echo', event)
-            }
-
-            if (event.message && event.message.text) {
+              _this7._handleEvent('echo', event);
+            } else if (event.message && event.message.text) {
               if (event.message.quick_reply) {
                 _this7._handleQuickReplyEvent(event);
               } else {
@@ -2028,7 +2021,7 @@ module.exports = function (bp, messenger) {
   });
 
   var preprocessEvent = function preprocessEvent(payload) {
-    var userId = payload.sender && payload.sender.id;
+    var userId = payload.message && payload.message.is_echo ? payload.recipient && payload.recipient.id : payload.sender && payload.sender.id;
     var mid = payload.message && payload.message.mid;
 
     if (mid && !messagesCache.has(mid)) {
@@ -2048,6 +2041,23 @@ module.exports = function (bp, messenger) {
       bp.middlewares.sendIncoming({
         platform: 'facebook',
         type: 'message',
+        user: profile,
+        text: e.message.text,
+        raw: e
+      });
+    });
+  });
+
+  messenger.on('echo', function (e) {
+    preprocessEvent(e).then(function (profile) {
+      if (e.alreadyProcessed) {
+        return console.log('messenger.echo.alreadyProcessed', e.message.mid)
+      } else {
+        console.log('messenger.echo...', e)
+      }
+      bp.middlewares.sendIncoming({
+        platform: 'facebook',
+        type: 'echo',
         user: profile,
         text: e.message.text,
         raw: e
