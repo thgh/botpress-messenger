@@ -1319,11 +1319,13 @@ var Messenger = function (_EventEmitter) {
         timeout = 1000;
       }
 
-      var before = timeout > 0 ? Promise.resolve(this.sendAction(recipientId, 'typing_on')) : Promise.resolve(true);
+      if (!timeout || timeout < 0) {
+        return Promise.resolve(true)
+      }
 
-      return before.delay(timeout + 1000).then(function () {
-        return _this5.sendAction(recipientId, 'typing_off');
-      });
+      var before = Promise.resolve(this.sendAction(recipientId, 'typing_on'))
+
+      return before.delay(timeout)
     }
   }, {
     key: 'getUserProfile',
@@ -2050,18 +2052,17 @@ module.exports = function (bp, messenger) {
 
   messenger.on('echo', function (e) {
     preprocessEvent(e).then(function (profile) {
-      if (e.alreadyProcessed) {
-        return console.log('messenger.echo.alreadyProcessed', e.message.mid)
+      if (e.message && e.message.text && !e.message.app_id) {
+        bp.middlewares.sendIncoming({
+          platform: 'facebook',
+          type: 'human',
+          user: profile,
+          text: e.message.text,
+          raw: e
+        });
       } else {
-        console.log('messenger.echo...', e)
+        return console.log('messenger.echo.notHuman', e.message, e.raw)
       }
-      bp.middlewares.sendIncoming({
-        platform: 'facebook',
-        type: 'echo',
-        user: profile,
-        text: e.message.text,
-        raw: e
-      });
     });
   });
 
