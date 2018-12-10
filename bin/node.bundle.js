@@ -1255,9 +1255,18 @@ var Messenger = function (_EventEmitter) {
       };
 
       if (options && options.typing) {
+        console.log('messenger.sendMessage.typing', options.typing)
         var autoTimeout = message && message.text ? 500 + message.text.length * 10 : 1000;
         var timeout = typeof options.typing === 'number' ? options.typing : autoTimeout;
         return this.sendTypingIndicator(recipientId, timeout).then(req);
+      }
+
+      if (options && options.tag) {
+        console.log('messenger.sendMessage.tag', options.tag || 'sub')
+        message.messaging_type = 'MESSAGE_TAG'
+        message.tag = options.tag
+      } else {
+        message.messaging_type = 'RESPONSE'
       }
 
       return req();
@@ -1268,7 +1277,7 @@ var Messenger = function (_EventEmitter) {
       var applicationID = this.config.applicationID;
       var accessToken = this.config.accessToken;
 
-      return fetch('https://graph.facebook.com/v2.7/' + applicationID + '/subscriptions_sample', {
+      return fetch('https://graph.facebook.com/v2.12/' + applicationID + '/subscriptions_sample', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1290,7 +1299,7 @@ var Messenger = function (_EventEmitter) {
       endpoint = endpoint || 'messages';
       method = method || 'POST';
 
-      var url = 'https://graph.facebook.com/v2.7/me/' + endpoint;
+      var url = 'https://graph.facebook.com/v2.12/me/' + endpoint;
       return fetch(url + '?access_token=' + this.config.accessToken, {
         method: method,
         headers: { 'Content-Type': 'application/json' },
@@ -1330,7 +1339,7 @@ var Messenger = function (_EventEmitter) {
   }, {
     key: 'getUserProfile',
     value: function getUserProfile(userId) {
-      var url = 'https://graph.facebook.com/v2.7/' + userId + '?fields=first_name,last_name,profile_pic,locale,timezone,gender&access_token=' + this.config.accessToken;
+      var url = 'https://graph.facebook.com/v2.12/' + userId + '?fields=first_name,last_name,profile_pic,locale,timezone,gender&access_token=' + this.config.accessToken;
       return fetch(url).then(this._handleFacebookResponse).then(function (res) {
         return res.json();
       }).catch(function (err) {
@@ -1370,7 +1379,7 @@ var Messenger = function (_EventEmitter) {
   }, {
     key: 'setTargetAudience',
     value: function setTargetAudience() {
-      var url = 'https://graph.facebook.com/v2.7/me/messenger_profile?access_token=' + this.config.accessToken;
+      var url = 'https://graph.facebook.com/v2.12/me/messenger_profile?access_token=' + this.config.accessToken;
       var setting = this.createTargetAudienceSetting();
 
       return this.sendRequest(setting, 'messenger_profile', 'POST');
@@ -1396,7 +1405,7 @@ var Messenger = function (_EventEmitter) {
                   }
                 }
 
-                url = 'https://graph.facebook.com/v2.6/me/messenger_profile?access_token=' + this.config.accessToken;
+                url = 'https://graph.facebook.com/v2.12/me/messenger_profile?access_token=' + this.config.accessToken;
                 _context2.next = 4;
                 return fetch(url, {
                   method: 'DELETE',
@@ -1527,7 +1536,7 @@ var Messenger = function (_EventEmitter) {
   }, {
     key: 'deleteChatExtensionHomeUrl',
     value: function deleteChatExtensionHomeUrl() {
-      var url = 'https://graph.facebook.com/v2.7/me/messenger_profile?access_token=' + this.config.accessToken;
+      var url = 'https://graph.facebook.com/v2.12/me/messenger_profile?access_token=' + this.config.accessToken;
       var setting = this.deleteChatExtensionHomeUrlSetting();
 
       return this.sendRequest(setting, 'messenger_profile', 'DELETE');
@@ -1535,7 +1544,7 @@ var Messenger = function (_EventEmitter) {
   }, {
     key: 'setChatExtensionHomeUrl',
     value: function setChatExtensionHomeUrl(home_url, in_test, show_share) {
-      var url = 'https://graph.facebook.com/v2.7/me/messenger_profile?access_token=' + this.config.accessToken;
+      var url = 'https://graph.facebook.com/v2.12/me/messenger_profile?access_token=' + this.config.accessToken;
 
       var setting = this.createChatExtensionHomeUrlSetting(home_url, in_test, show_share);
 
@@ -1852,9 +1861,9 @@ var Messenger = function (_EventEmitter) {
     value: function _setupNewWebhook() {
       var _this8 = this;
 
-      var oAuthUrl = 'https://graph.facebook.com/v2.7/oauth/access_token' + '?client_id=' + this.config.applicationID + '&client_secret=' + this.config.appSecret + '&grant_type=client_credentials';
+      var oAuthUrl = 'https://graph.facebook.com/v2.12/oauth/access_token' + '?client_id=' + this.config.applicationID + '&client_secret=' + this.config.appSecret + '&grant_type=client_credentials';
 
-      var url = 'https://graph.facebook.com/v2.7/' + this.config.applicationID + '/subscriptions?access_token=';
+      var url = 'https://graph.facebook.com/v2.12/' + this.config.applicationID + '/subscriptions?access_token=';
 
       return fetch(oAuthUrl).then(this._handleFacebookResponse).then(function (res) {
         return res.json();
@@ -1878,7 +1887,7 @@ var Messenger = function (_EventEmitter) {
   }, {
     key: '_subscribePage',
     value: function _subscribePage() {
-      var url = 'https://graph.facebook.com/v2.6/me/subscribed_apps?access_token=' + this.config.accessToken;
+      var url = 'https://graph.facebook.com/v2.12/me/subscribed_apps?access_token=' + this.config.accessToken;
 
       return fetch(url, { method: 'POST' }).then(this._handleFacebookResponse).then(function (res) {
         return res.json();
@@ -1889,7 +1898,7 @@ var Messenger = function (_EventEmitter) {
   }, {
     key: '_unsubscribePage',
     value: function _unsubscribePage() {
-      var url = 'https://graph.facebook.com/v2.6/me/subscribed_apps?access_token=' + this.config.accessToken;
+      var url = 'https://graph.facebook.com/v2.12/me/subscribed_apps?access_token=' + this.config.accessToken;
 
       return fetch(url, { method: 'DELETE' }).then(this._handleFacebookResponse).then(function (res) {
         return res.json();
@@ -1900,7 +1909,7 @@ var Messenger = function (_EventEmitter) {
   }, {
     key: '_getPage',
     value: function _getPage() {
-      var url = 'https://graph.facebook.com/v2.6/me/?access_token=' + this.config.accessToken;
+      var url = 'https://graph.facebook.com/v2.12/me/?access_token=' + this.config.accessToken;
 
       return fetch(url, { method: 'GET' }).then(this._handleFacebookResponse).then(function (res) {
         return res.json();

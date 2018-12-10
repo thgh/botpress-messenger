@@ -47844,7 +47844,7 @@ var YouTube = function (_Base) {
         FB.init({
           appId: _this2.props.facebookConfig.appId,
           xfbml: true,
-          version: 'v2.5'
+          version: 'v2.12'
         });
         FB.Event.subscribe('xfbml.ready', function (msg) {
           if (msg.type === 'video' && msg.id === _this2.playerID) {
