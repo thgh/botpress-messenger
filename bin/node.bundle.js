@@ -1246,12 +1246,21 @@ var Messenger = function (_EventEmitter) {
       var _this3 = this;
 
       var req = function req() {
-        return _this3.sendRequest({
+        const request = {
           recipient: {
             id: recipientId
           },
+          messaging_type: 'RESPONSE',
           message: message
-        });
+        }
+
+        if (options && options.tag) {
+          console.log('messenger.sendMessage.tag', options.tag || 'sub')
+          request.messaging_type = 'MESSAGE_TAG'
+          request.tag = options.tag
+        }
+
+        return _this3.sendRequest(request);
       };
 
       if (options && options.typing) {
@@ -1259,14 +1268,6 @@ var Messenger = function (_EventEmitter) {
         var autoTimeout = message && message.text ? 500 + message.text.length * 10 : 1000;
         var timeout = typeof options.typing === 'number' ? options.typing : autoTimeout;
         return this.sendTypingIndicator(recipientId, timeout).then(req);
-      }
-
-      if (options && options.tag) {
-        console.log('messenger.sendMessage.tag', options.tag || 'sub')
-        message.messaging_type = 'MESSAGE_TAG'
-        message.tag = options.tag
-      } else {
-        message.messaging_type = 'RESPONSE'
       }
 
       return req();
