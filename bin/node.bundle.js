@@ -1340,11 +1340,15 @@ var Messenger = function (_EventEmitter) {
   }, {
     key: 'getUserProfile',
     value: function getUserProfile(userId) {
-      var url = 'https://graph.facebook.com/v2.12/' + userId + '?fields=first_name,last_name,profile_pic,locale,timezone,gender&access_token=' + this.config.accessToken;
+      var url = 'https://graph.facebook.com/v3.2/' + userId + '?fields=first_name,last_name,profile_pic&access_token=' + this.config.accessToken;
       return fetch(url).then(this._handleFacebookResponse).then(function (res) {
         return res.json();
       }).catch(function (err) {
-        return console.log('Error getting user profile: ' + err);
+        return console.log('Error getting user profile: ' + err) || {
+          last_name: '?',
+          first_name: '?',
+          profile_pic: 'https://via.placeholder.com/150?text=no+profile+picture'
+        };
       });
     }
   }, {
