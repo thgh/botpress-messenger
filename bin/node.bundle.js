@@ -2048,7 +2048,22 @@ module.exports = function (bp, messenger) {
       messagesCache.set(mid, true);
     }
 
-    return users.getOrFetchUserProfile(userId);
+    return users.getOrFetchUserProfile(userId)
+      .catch(err => {
+        console.error(new Date().toJSON())
+        console.error('getOrFetchUserProfile error', userId, err)
+        bp.middlewares.sendIncoming({
+          platform: 'facebook',
+          type: 'error',
+          user: {
+            userId
+          },
+          text: err.message,
+          raw: e
+        });
+        console.error('Promise never resolves')
+        return new Promise(() => {})
+      });
   };
 
   messenger.on('message', function (e) {
